@@ -2,7 +2,6 @@
 
 namespace CodexSoft\Code\Helpers;
 
-use CodexSoft\Code\Context\Context;
 use Psr\Log\LoggerInterface;
 
 class Files
@@ -80,32 +79,31 @@ class Files
      * a newline or a UTF-8 BOM (byte-order mark).
      * @return bool
      */
-    public static function fileNotEmpty( $file )
+    public static function fileNotEmpty($file): bool
     {
         clearstatcache();
         return filesize($file) >= 16;
     }
 
-    public static function fileExtention( $fileName )
+    /**
+     * @param string $fileName
+     *
+     * @return string
+     */
+    public static function fileExtention(string $fileName): string
     {
         return pathinfo($fileName,PATHINFO_EXTENSION);
     }
 
-    public static function fileName( $fileName )
+    /**
+     * @param string $fileName
+     *
+     * @return string
+     */
+    public static function fileName(string $fileName): string
     {
-        return pathinfo( $fileName, PATHINFO_FILENAME );
+        return pathinfo($fileName, PATHINFO_FILENAME);
     }
-
-    //public function removeExtension( $fileName ): string
-    //{
-    //    $dirname = \dirname($fileName);
-    //    if ($dirname !== '.') {
-    //        $dirname .= '/';
-    //    } else {
-    //        $dirname = '';
-    //    }
-    //    return $dirname.pathinfo( $fileName, PATHINFO_FILENAME );
-    //}
 
     public static function removeExtension($fileName ): string
     {
@@ -120,42 +118,43 @@ class Files
 
     /**
      * @param string $fileAbsolutePath абсолютный путь к подключаемому файлу
-     * @param null $defaultValue
+     * @param mixed $defaultValue
+     * @param LoggerInterface|null $logger
      *
      * @return mixed|null
      */
-    public static function safelyInclude( $fileAbsolutePath, $defaultValue = null )
+    public static function safelyInclude( $fileAbsolutePath, $defaultValue = null, ?LoggerInterface $logger = null)
     {
-
-        if ( file_exists($fileAbsolutePath) ) {
+        if (file_exists($fileAbsolutePath)) {
             try {
                 /** @noinspection PhpIncludeInspection */
-                $settings = include $fileAbsolutePath;
-                return $settings;
+                return include $fileAbsolutePath;
             } catch(\Throwable $e) {
-
-                // todo: стоит ли обращаться к Context отсюда?
-                $logger = Context::getOrNull(LoggerInterface::class);
-                if ($logger instanceof LoggerInterface) {
-                    $logger->error( 'Settings file not found: '.$fileAbsolutePath.'!' );
-                }
             }
         }
 
-        return $defaultValue;
+        if ($logger instanceof LoggerInterface) {
+            $logger->error('Settings file not found: '.$fileAbsolutePath.'!');
+        }
 
+        return $defaultValue;
     }
 
-    public static function safelyGetContents( $filename, $default = '' ) {
-
+    /**
+     * @param string $filename
+     * @param string|null $default
+     *
+     * @return false|string
+     */
+    public static function safelyGetContents(string $filename, ?string $default = null): ?string
+    {
         try {
-            if ( file_exists($filename) ) {
+            if (file_exists($filename)) {
                 return file_get_contents( $filename );
             }
         } catch (\Throwable $e) {}
 
         return $default;
-
     }
 
     /**
@@ -165,7 +164,7 @@ class Files
      * @return bool|mixed|string
      * @throws \Exception
      */
-    public static function fillTemplate( $filename, array $replacements )
+    public static function fillTemplate($filename, array $replacements)
     {
 
         if (!file_exists($filename)) {
