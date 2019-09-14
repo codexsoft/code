@@ -15,9 +15,11 @@ class Shortcuts
 
 }
 
+/** @deprecated global constants should be avoided in library code */
 const TAB = '    ';
 
 /**
+ * @deprecated global functions should be avoided in library code
  * Just a shortcut for stringy
  * usage: (string) \App\str('hello')->toUpperCase()
  * @param $str
@@ -30,6 +32,7 @@ function str($str): Stringy
 }
 
 /**
+ * @deprecated global functions should be avoided in library code
  * convert to Default Time Zone
  * creates Carbon instance and converts it to default timezone
  *
@@ -47,6 +50,7 @@ function DTZ(string $datetime, $representedInTimezone = Constants::TZ_DTZ): Carb
 }
 
 /**
+ * @deprecated global functions should be avoided in library code
  * creates Carbon instance and converts it to default timezone
  *
  * @param string $date date in ISO format Y-m-d
