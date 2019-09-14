@@ -5,7 +5,6 @@ namespace CodexSoft\Code\TimeService;
 use Carbon\Carbon;
 
 /**
- * Class ScaledClockService
  * Sometimes we need make time to speed up or to speed down: for example, 60 second per real second.
  * It can be useful for tests and for simulation purposes.
  *
@@ -17,8 +16,6 @@ use Carbon\Carbon;
  *
  * Carbon also has ability to set faked DateTime
  * Carbon::setTestNow(); // http://carbon.nesbot.com/docs/#api-testing
- *
- * @package Vezubr\Domain\Simulation
  */
 class ScaledTimeService implements TimeServiceInterface
 {
