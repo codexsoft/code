@@ -18,4 +18,9 @@ class Constants
     public const TZ_UTC = 'UTC';
     public const TZ_DTZ = self::TZ_UTC; // default time zone
 
+    /**
+     * Used for code generation purposes
+     */
+    public const TAB = '    ';
+
 }
