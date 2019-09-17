@@ -16,6 +16,7 @@
         "roave/security-advisories": "dev-master"
     },
     "autoload": {
+        "files": ["functions-autoload.php"],
         "psr-4": {
             "": ["src/", "vendor/"]
         }
