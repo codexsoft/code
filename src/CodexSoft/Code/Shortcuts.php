@@ -15,11 +15,10 @@ class Shortcuts
 
 }
 
-/** @deprecated global constants should be avoided in library code */
+/** used mostly for code generation (tabulation via spaces) */
 const TAB = '    ';
 
 /**
- * @deprecated global functions should be avoided in library code
  * Just a shortcut for stringy
  * usage: (string) \App\str('hello')->toUpperCase()
  * @param $str
