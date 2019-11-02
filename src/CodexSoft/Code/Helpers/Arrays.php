@@ -122,9 +122,6 @@ class Arrays
 
     }
 
-    //const DEFAULT_VALUE = '';
-    static public $DEFAULT_BLANK_VALUE = '_____________________';
-
     /**
      * и для упрощения этой конструкции: $array['victim']['car']['customModel']
      * с проверками на существование ключей
