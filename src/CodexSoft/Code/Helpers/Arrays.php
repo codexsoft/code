@@ -5,14 +5,23 @@ namespace CodexSoft\Code\Helpers;
 use CodexSoft\Code\Traits\StaticAccess;
 use function CodexSoft\Code\str;
 
+/**
+ * Consider using https://github.com/bocharsky-bw/Arrayzy
+ */
 class Arrays
 {
 
     use StaticAccess;
 
-    public function concat( ...$items ) {
+    /**
+     * @param mixed ...$items
+     *
+     * @return array
+     */
+    public static function concat(...$items): array
+    {
         $result = [];
-        foreach ( (array) $items as $item ) {
+        foreach ((array) $items as $item) {
             if (\is_object($item)) {
                 $result[] = $item;
             } else {
@@ -20,28 +29,41 @@ class Arrays
             }
 
         }
-        return array_merge( ...$result );
+
+        return \array_merge( ...$result );
     }
 
-    public function concatUnique( ...$items ) {
-
-        return array_unique( $this->concat( ...$items ) );
-
+    /**
+     * @param mixed ...$items
+     *
+     * @return array
+     */
+    public static function concatUnique(...$items): array
+    {
+        return \array_unique(self::concat(...$items));
     }
 
-    public function fromSquarePath2KeysArray( $string ) {
+    /**
+     * foo[bar][baz] => ['foo', 'bar', 'baz']
+     * @param string $string
+     *
+     * @return array
+     */
+    public static function fromSquarePath2KeysArray(string $string): array
+    {
 
         $i = 0;
         $result = [];
         $buffer = '';
-        while ( $i < strlen($string) ) {
+        while ($i < \strlen($string)) {
 
             switch ( $string[$i] ) {
 
                 case '[':
                 case ']':
-                    if ( $buffer !== '' )
+                    if ( $buffer !== '' ) {
                         $result[] = $buffer;
+                    }
                     $buffer = '';
                     break;
 
@@ -63,7 +85,7 @@ class Arrays
      *
      * @return array
      */
-    public function plainifySquared( array $arrayToImport, $currentKeyPrefix = '' )
+    public static function plainifySquared( array $arrayToImport, $currentKeyPrefix = '' )
     {
 
         if ( !is_array($arrayToImport) || !count($arrayToImport) ) return [];
@@ -82,7 +104,7 @@ class Arrays
                 continue;
             }
 
-            $compiledArray = $compiledArray + $this->plainifySquared( $value, $curVar );
+            $compiledArray += self::plainifySquared($value, $curVar);
 
         }
 
@@ -99,7 +121,7 @@ class Arrays
      *
      * @return array
      */
-    public function plainify( array $arrayToImport, $currentKeyPrefix = '', $delimiter = '.' )
+    public static function plainify(array $arrayToImport, $currentKeyPrefix = '', $delimiter = '.'): array
     {
 
         if ( !is_array($arrayToImport) || !count($arrayToImport) ) return [];
@@ -114,7 +136,7 @@ class Arrays
                 continue;
             }
 
-            $compiledArray = $compiledArray + $this->plainify( $value, $currentKeyPrefix.$parameter.$delimiter );
+            $compiledArray += self::plainify($value, $currentKeyPrefix.$parameter.$delimiter, $delimiter);
 
         }
 
@@ -127,12 +149,14 @@ class Arrays
      * с проверками на существование ключей
      * Arrays::getHierarchy($array,['victim','car','customModel'])
      *
+     * consider using https://symfony.com/doc/current/components/property_access.html as alternative
+     *
      * @param array $array
      * @param array $path
      *
-     * @return mixed
+     * @return mixed|null
      */
-    public function getHierarchy( array $array, array $path )
+    public static function getHierarchy(array $array, array $path)
     {
 
         if ( !is_array($array) ) return null;
@@ -140,14 +164,14 @@ class Arrays
         if ( !is_array($path) ) return null;
         if (!count($path)) return null;
 
-        $current = $this->valueOfKey( $array, $path[0], null );
+        $current = self::valueOfKey( $array, $path[0], null );
         if ( count($path) == 1 ) return $current;
 
         $i = 1;
 
         while ( is_array($current) && $i < count($path) )
         {
-            $current = $this->valueOfKey( $current, $path[$i], null );
+            $current = self::valueOfKey( $current, $path[$i], null );
             if ($current === null) return null;
             $i++;
         }
@@ -157,60 +181,70 @@ class Arrays
     }
 
     /**
-     * @param $data
-     * @param $path
-     * @param $value
+     * @param array $data
+     * @param array $path
+     * @param mixed $value
      *
-     * @return mixed
+     * @return void
      * @link http://stackoverflow.com/questions/15483496/how-to-dynamically-set-value-in-multidimensional-array-by-reference
+     *
+     * Usage Arrays::setHierarchy($array, ['hello', 'world'], 42);
+     * echo $array['hello']['world'] => 42
      */
-    function setHierarchy(&$data, $path, $value) {
+    public static function setHierarchy(array &$data, array $path, $value): void
+    {
         $temp = &$data;
-        foreach ( $path as $key ) {
+        foreach ($path as $key) {
             $temp = &$temp[$key];
         }
         $temp = $value;
-        return $value;
     }
 
 
     /**
      * TODO: getValueOf? safeGet?
      * @param $array
-     * @param $key
-     * @param string $defaultValue
+     * @param int|string $key
+     * @param mixed $defaultValue
      *
-     * @return string
+     * @return mixed
      */
-    public function valueOfKey( $array, $key, $defaultValue = '' )
+    public static function valueOfKey(array $array, $key, $defaultValue = null)
     {
-
-        return array_key_exists( $key, $array )
-            ? $array[$key]
-            : $defaultValue;
+        return \array_key_exists($key, $array) ? $array[$key] : $defaultValue;
     }
 
-    public function getLast( $array ) {
+    /**
+     * Get last value from array
+     * @param $array
+     *
+     * @return mixed
+     */
+    public function getLast($array)
+    {
         return array_values(array_slice($array, -1))[0];
         // array_pop((array_slice($array, -1)));
         // $array[count($array)-1]
     }
 
-    public function getFirst( array $array ) {
-
-        if ( is_array( $array ) ) {
-            if ( count($array) ) {
-                reset($array);
-                return current($array);
-            }
-
-            return null;
-
+    /**
+     * Get first value from array
+     * @param array $array
+     *
+     * @return array|mixed|null
+     */
+    public static function getFirst(array $array)
+    {
+        if (!\is_array($array)) {
+            return $array;
         }
 
-        // TODO: если это не массив, то возвращаем прямо его же
-        return $array;
+        if (\count($array)) {
+            reset($array);
+            return current($array);
+        }
 
+        return null;
     }
 
     public function multiFromPlain( $array )
@@ -298,25 +332,50 @@ class Arrays
         return $readyData;
     }
 
-    public function groupBy( $array, $fieldForGrouping )
+    /**
+     * @param array $array
+     * @param $fieldForGrouping
+     *
+     * @return array
+     */
+    public static function groupBy(array $array, $fieldForGrouping): array
     {
         $readyData = [];
-        if ( $array ) foreach ( $array as $element )
+        foreach ($array as $element) {
             $readyData[ $element[$fieldForGrouping] ][] = $element;
+        }
+
         return $readyData;
     }
 
-    public function replaceValue( &$array, $oldValue, $newValue ) {
-        if (($key = array_search($oldValue, $array)) === false)
+    /**
+     * @param array $array
+     * @param mixed $oldValue
+     * @param mixed $newValue
+     *
+     * @return bool
+     */
+    public static function replaceValue(array &$array, $oldValue, $newValue): bool
+    {
+        if (($key = \array_search($oldValue, $array)) === false) {
             return false;
+        }
+
         $array[$key] = $newValue;
         return true;
     }
 
-    public function removeElementByValue( $array, $value ) {
-
-        return array_filter($array, function($i) use ( $value ) { return $i !== $value; });
-
+    /**
+     * @param array $array
+     * @param mixed $value
+     *
+     * @return array filtered array
+     */
+    public static function removeElementsWithValue(array $array, $value): array
+    {
+        return array_filter($array, function($i) use ($value) {
+            return $i !== $value;
+        });
     }
 
     /**
@@ -680,7 +739,7 @@ class Arrays
      * @return array
      * @throws \Exception
      */
-    public function map($array, $from, $to, $group = null)
+    public function map(array $array, $from, $to, $group = null)
     {
         $result = [];
         foreach ($array as $element) {
@@ -705,19 +764,19 @@ class Arrays
      * @param boolean $caseSensitive whether the key comparison should be case-sensitive
      * @return boolean whether the array contains the specified key
      */
-    public function keyExists($key, $array, $caseSensitive = true)
+    public static function keyExists($key, array $array, bool $caseSensitive = true): bool
     {
         if ($caseSensitive) {
-            return array_key_exists($key, $array);
-        } else {
-            foreach (array_keys($array) as $k) {
-                if (strcasecmp($key, $k) === 0) {
-                    return true;
-                }
-            }
-
-            return false;
+            return \array_key_exists($key, $array);
         }
+
+        foreach (\array_keys($array) as $k) {
+            if (strcasecmp($key, $k) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -777,7 +836,7 @@ class Arrays
      * @return array the encoded data
      * @see http://www.php.net/manual/en/function.htmlspecialchars.php
      */
-    public function htmlEncode($data, $valuesOnly = true, $charset = 'UTF-8')
+    public static function htmlEncode($data, $valuesOnly = true, $charset = 'UTF-8')
     {
 
         $d = [];
@@ -788,7 +847,7 @@ class Arrays
             if (is_string($value)) {
                 $d[$key] = htmlspecialchars($value, ENT_QUOTES, $charset);
             } elseif (is_array($value)) {
-                $d[$key] = $this->htmlEncode($value, $valuesOnly, $charset);
+                $d[$key] = self::htmlEncode($value, $valuesOnly, $charset);
             } else {
                 $d[$key] = $value;
             }
@@ -808,7 +867,7 @@ class Arrays
      * @return array the decoded data
      * @see http://www.php.net/manual/en/function.htmlspecialchars-decode.php
      */
-    public function htmlDecode($data, $valuesOnly = true)
+    public static function htmlDecode($data, $valuesOnly = true)
     {
         $d = [];
         foreach ($data as $key => $value) {
@@ -818,7 +877,7 @@ class Arrays
             if (is_string($value)) {
                 $d[$key] = htmlspecialchars_decode($value, ENT_QUOTES);
             } elseif (is_array($value)) {
-                $d[$key] = $this->htmlDecode($value);
+                $d[$key] = self::htmlDecode($value);
             } else {
                 $d[$key] = $value;
             }
@@ -827,10 +886,18 @@ class Arrays
         return $d;
     }
 
+    /**
+     * @param array $arr
+     *
+     * @return bool
+     */
     public static function isAssoc(array $arr): bool
     {
-        if ([] === $arr) return false;
-        return (bool) (array_keys($arr) !== range(0, count($arr) - 1));
+        if ([] === $arr) {
+            return false;
+        }
+
+        return \array_keys($arr) !== range(0, count($arr) - 1);
     }
 
     /**
@@ -846,27 +913,28 @@ class Arrays
      * the array to be treated as associative.
      * @return boolean whether the array is associative
      */
-    public function isAssociative($array, $allStrings = true)
+    public static function isAssociative($array, $allStrings = true): bool
     {
-        if (!is_array($array) || empty($array)) {
+        if (!\is_array($array) || empty($array)) {
             return false;
         }
 
         if ($allStrings) {
             foreach ($array as $key => $value) {
-                if (!is_string($key)) {
+                if (!\is_string($key)) {
                     return false;
                 }
             }
             return true;
-        } else {
-            foreach ($array as $key => $value) {
-                if (is_string($key)) {
-                    return true;
-                }
-            }
-            return false;
         }
+
+        foreach ($array as $key => $value) {
+            if (\is_string($key)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -882,9 +950,9 @@ class Arrays
      * in order for the array to be treated as indexed.
      * @return boolean whether the array is associative
      */
-    public function isIndexed($array, $consecutive = false)
+    public static function isIndexed($array, $consecutive = false): bool
     {
-        if (!is_array($array)) {
+        if (!\is_array($array)) {
             return false;
         }
 
@@ -893,27 +961,28 @@ class Arrays
         }
 
         if ($consecutive) {
-            return array_keys($array) === range(0, count($array) - 1);
-        } else {
-            foreach ($array as $key => $value) {
-                if (!is_int($key)) {
-                    return false;
-                }
-            }
-            return true;
+            return array_keys($array) === range(0, \count($array) - 1);
         }
+
+        foreach ($array as $key => $value) {
+            if (!is_int($key)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
      * Returns a key for desired value
      * @param array $array
-     * @param $key
+     * @param int|string $key
      *
      * @return false|int|string
      */
-    public function getKeyByValue(array $array,$key)
+    public static function getKeyByValue(array $array, $key)
     {
-        return array_search( $key, $array, true );
+        return \array_search($key, $array, true);
     }
 
     /**
@@ -1026,6 +1095,18 @@ class Arrays
     public static function uniqueInt(array $array = [])
     {
         return array_filter(array_unique(array_map('intval', $array)));
+    }
+
+    /**
+     * @param array $array
+     * @param mixed ...$values
+     */
+    public static function push(array &$array, ...$values): void
+    {
+        if (!\count($values)) {
+            return;
+        }
+        \array_push($array, ...$values);
     }
 
 }

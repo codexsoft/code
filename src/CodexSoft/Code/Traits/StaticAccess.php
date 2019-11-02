@@ -10,13 +10,13 @@ namespace CodexSoft\Code\Traits;
  */
 trait StaticAccess
 {
-
+    /** @var static */
 	private static $_static_instance;
 
     /**
      * @return static
      */
-	public static function tool()
+	public static function getInstance(): self
     {
 
         if (!self::$_static_instance instanceof static) {
@@ -24,22 +24,22 @@ trait StaticAccess
         }
 
         return self::$_static_instance;
-
 	}
 
     /**
      * @param static $instance
      *
-     * @throws \Exception
+     * @throws \InvalidArgumentException
+     * @return void
      */
-    public static function setInstance( $instance ) {
+    public static function setInstance($instance): void
+    {
 
         if (!$instance instanceof static) {
-            throw new \Exception('Wrong instance provided: '.static::class.' expected, '.get_class($instance).' provided.');
+            throw new \InvalidArgumentException('Wrong instance provided: '.static::class.' expected, '.\get_class($instance).' provided.');
         }
 
         self::$_static_instance = $instance;
-
     }
 
 }
