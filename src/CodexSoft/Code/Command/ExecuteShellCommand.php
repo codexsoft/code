@@ -18,7 +18,7 @@ class ExecuteShellCommand extends Command
     /** @var bool */
     private $stopOnError;
 
-    public function __construct(array $cmds, string $name = null, $stopOnError = false)
+    public function __construct(array $cmds, string $name = null, $stopOnError = true)
     {
         parent::__construct($name);
         $this->cmds = $cmds;
