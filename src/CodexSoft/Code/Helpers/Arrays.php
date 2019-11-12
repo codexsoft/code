@@ -350,6 +350,27 @@ class Arrays
 
     /**
      * @param array $array
+     * @param \Closure $closure a function($element): scalar
+     *
+     * for example:
+     * Arrays::groupByClosure($elements, function($element) {
+     *     return $element->getName();
+     * });
+     *
+     * @return array
+     */
+    public static function groupByClosure(array $array, \Closure $closure): array
+    {
+        $readyData = [];
+        foreach ($array as $element) {
+            $readyData[$closure($element)][] = $element;
+        }
+
+        return $readyData;
+    }
+
+    /**
+     * @param array $array
      * @param mixed $oldValue
      * @param mixed $newValue
      *
