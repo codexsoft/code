@@ -1130,4 +1130,24 @@ class Arrays
         \array_push($array, ...$values);
     }
 
+    /**
+     * @param array $object
+     * @param array $interface
+     *
+     * @return bool
+     * @deprecated not implemented!
+     * todo: implement using codexsoft/function-implements-interface TS code
+     */
+    public static function implementsInterface(array $object, array $interface): bool
+    {
+        if (!\is_array($object) || !\is_array($interface)) {
+            return false;
+        }
+
+        foreach ($interface as $interfaceKey => $expectedType) {
+            $actualValue = $object[$interfaceKey];
+            $actualType = gettype($actualValue);
+        }
+    }
+
 }
