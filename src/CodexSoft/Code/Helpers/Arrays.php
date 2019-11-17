@@ -1119,6 +1119,9 @@ class Arrays
     }
 
     /**
+     * this helper is useful for PHP <7.3
+     * https://www.php.net/manual/ru/function.array-push.php
+     *
      * @param array $array
      * @param mixed ...$values
      */
